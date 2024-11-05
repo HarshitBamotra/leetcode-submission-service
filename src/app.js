@@ -8,7 +8,11 @@ const fastifyPlugin = require("fastify-plugin");
 async function app(fastify, options){
     fastify.register(require("@fastify/cors"));
 
-    fastify.register(require("./routes/test.route"), {prefix:"/api"});
+    fastify.register(require("./repository/repoPlugin"));
+
+    fastify.register(require("./services/servicePlugin"));
+
+    fastify.register(require("./routes/api/apiRoutes"), {prefix:"/api"});
 
 }
 
