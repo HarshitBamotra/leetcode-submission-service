@@ -10,8 +10,8 @@ class SubmissionService{
         return "pong";
     }
 
-    async addSubmission(submission){
-        const submission = this.submissionRepo.createSubmission(submission);
+    async addSubmission(submissionPayload){
+        const submission = await this.submissionRepo.createSubmission(submissionPayload);
         if(!submission){
             throw {message: "Not able to create submission"};
         }
