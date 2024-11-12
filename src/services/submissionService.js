@@ -15,7 +15,7 @@ class SubmissionService{
 
         console.log(submissionPayload);
         const problemId = submissionPayload.problemId;
-
+        const userId = submissionPayload.userId;
         const problemApiResponse = await fetchProblemDetails(problemId);
 
         if(!problemApiResponse){
@@ -25,21 +25,23 @@ class SubmissionService{
         const codeLanguageStub = problemApiResponse.data.codeStubs.find(codeStub => codeStub.language.toLowerCase() === submissionPayload.language.toLowerCase());
 
         // console.log(codeLanguageStub);
-        codeLanguageStub.userSnippet = submissionPayload.code;
-        submissionPayload.code = codeLanguageStub.startSnippet +"\n\n"+ codeLanguageStub.userSnippet + "\n\n" + codeLanguageStub.endSnippet;
+        
+        submissionPayload.code = codeLanguageStub.startSnippet +"\n\n"+ submissionPayload.code + "\n\n" + codeLanguageStub.endSnippet;
 
-        console.log(submissionPayload);
+        // console.log(submissionPayload);
         const submission = await this.submissionRepo.createSubmission(submissionPayload);
         if(!submission){
             throw {message: "Not able to create submission"};
         }
-        console.log(submission);
+        // console.log(submission);
         const response = await submissionProducer({
             [submission._id]:{
                 code: submission.code,
                 language: submission.language,
                 inputCase: problemApiResponse.data.testCases[0].input,
-                outputCase: problemApiResponse.data.testCases[0].output
+                outputCase: problemApiResponse.data.testCases[0].output,
+                userId: userId,
+                submissionId: submission._id
             }
         });
         return {queueResponse: response, submission};
